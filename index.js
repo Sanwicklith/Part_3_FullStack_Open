@@ -27,9 +27,13 @@ const app = express()
 PORT = 3001
 
 //  Creating routes now
-app.get('/', (request, response) => {
-  response.send('<h1>Hello Part_3!</h1>')
-
+app.get('/info', (request, response) => {
+  const dateAndTime = new Date()
+  response.send(`
+    <p>Phonebook has info for ${persons.length} people </p> 
+    <p>${dateAndTime}</p>  
+    `)
+ 
 })
 
 app.get('/api/persons', (req, res)=>{

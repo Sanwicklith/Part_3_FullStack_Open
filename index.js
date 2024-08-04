@@ -24,6 +24,7 @@ let persons = [
 ];
 
 const app = express();
+app.use(express.json())
 PORT = 3001;
 
 //  Creating routes now
@@ -58,6 +59,21 @@ app.delete('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).send({ error: 'not found' });
   }
+});
+
+app.post('/api/persons', (req, res) => {
+  const id = Math.floor(Math.random() * 10000);
+  const { name, number } = req.body;
+  if (!name || !number) {
+    return res.status(400).json({ error: 'name or number missing' });
+  }
+  const newPerson = {
+    name,
+    number,
+    id,
+  };
+  persons = [...persons, newPerson];
+  res.json(newPerson);
 });
 
 app.listen(PORT, () => {

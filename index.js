@@ -63,7 +63,12 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000);
+  const namesInPhonebook = persons.map(person=> person.name)
+  
   const { name, number } = req.body;
+  if(namesInPhonebook.includes(name)){
+    return res.status(400).json({ error: 'name must be unique' });
+  }
   if (!name || !number) {
     return res.status(400).json({ error: 'name or number missing' });
   }

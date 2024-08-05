@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan')
+const cors = require('cors')
 
 let persons = [
   {
@@ -27,6 +28,7 @@ let persons = [
 const app = express();
 app.use(express.json())
 let logger = (morgan('tiny'))
+app.use(cors())
 PORT = 3001;
 
 //  Creating routes now

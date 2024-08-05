@@ -29,11 +29,12 @@ const app = express();
 app.use(express.json());
 let logger = morgan('tiny');
 app.use(cors());
+app.use(express.static('dist'))
 
 //  Creating routes now
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>');
-});
+// app.get('/', (request, response) => {
+//   response.send('<h1>Hello World!</h1>');
+// });
 app.get('/info', (request, response) => {
   const dateAndTime = new Date();
   response.send(`

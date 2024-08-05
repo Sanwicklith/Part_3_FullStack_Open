@@ -26,7 +26,7 @@ let persons = [
 
 const app = express();
 app.use(express.json())
-app.use(morgan('tiny'))
+let logger = (morgan('tiny'))
 PORT = 3001;
 
 //  Creating routes now
@@ -66,7 +66,9 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000);
   const namesInPhonebook = persons.map(person=> person.name)
-  
+  logger(req, res, ()=>{
+    console.log(JSON.stringify(req.body))
+  })
   const { name, number } = req.body;
   if(namesInPhonebook.includes(name)){
     return res.status(400).json({ error: 'name must be unique' });

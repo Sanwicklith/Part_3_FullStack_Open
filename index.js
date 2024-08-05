@@ -1,6 +1,6 @@
 const express = require('express');
-const morgan = require('morgan')
-const cors = require('cors')
+const morgan = require('morgan');
+const cors = require('cors');
 
 let persons = [
   {
@@ -26,12 +26,14 @@ let persons = [
 ];
 
 const app = express();
-app.use(express.json())
-let logger = (morgan('tiny'))
-app.use(cors())
-PORT = 3001;
+app.use(express.json());
+let logger = morgan('tiny');
+app.use(cors());
 
 //  Creating routes now
+app.get('/', (request, response) => {
+  response.send('<h1>Hello World!</h1>');
+});
 app.get('/info', (request, response) => {
   const dateAndTime = new Date();
   response.send(`
@@ -67,12 +69,12 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const id = Math.floor(Math.random() * 10000);
-  const namesInPhonebook = persons.map(person=> person.name)
-  logger(req, res, ()=>{
-    console.log(JSON.stringify(req.body))
-  })
+  const namesInPhonebook = persons.map(person => person.name);
+  logger(req, res, () => {
+    console.log(JSON.stringify(req.body));
+  });
   const { name, number } = req.body;
-  if(namesInPhonebook.includes(name)){
+  if (namesInPhonebook.includes(name)) {
     return res.status(400).json({ error: 'name must be unique' });
   }
   if (!name || !number) {
@@ -86,7 +88,7 @@ app.post('/api/persons', (req, res) => {
   persons = [...persons, newPerson];
   res.json(newPerson);
 });
-
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

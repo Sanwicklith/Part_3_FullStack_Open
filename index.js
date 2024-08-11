@@ -25,7 +25,7 @@ app.get('/info', (request, response) => {
   Person.countDocuments({}).then(count => {
     const dateAndTime = new Date();
     response.send(`
-      <p>Phonebook has info for ${count} people</p>
+      <p>Phonebook has info about ${count} people</p>
       <p>${dateAndTime}</p>
     `);
   });

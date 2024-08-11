@@ -78,7 +78,7 @@ app.delete('/api/persons/:id', (req, res) => {
     return res.status(400).send({ error: 'Invalid ID format' });
   }
 
-  Person.findByIdAndRemove(id)
+  Person.findByIdAndDelete(id)
     .then(result => {
       if (result) {
         res.status(204).end();
@@ -87,9 +87,11 @@ app.delete('/api/persons/:id', (req, res) => {
       }
     })
     .catch(error => {
+      console.error('Error deleting person:', error.message);
       res.status(500).send({ error: 'Something went wrong' });
     });
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -77,6 +77,36 @@ app.post('/api/persons', (req, res, next) => {
     .catch(error => next(error)); // Pass the error to the error handler
 });
 
+// PUT route to update an existing person's number
+app.put('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id;
+  const { name, number } = req.body;
+
+  // Ensure the request body contains the necessary data
+  if (!name || !number) {
+    return res.status(400).json({ error: 'Name or number missing' });
+  }
+
+  // Construct the updated person object
+  const updatedPerson = { number };
+
+  // Use findByIdAndUpdate to update the existing entry
+  Person.findByIdAndUpdate(
+    id,
+    updatedPerson,
+    { new: true, runValidators: true, context: 'query' } // Options: return the updated object and run validation
+  )
+    .then(updatedPerson => {
+      if (updatedPerson) {
+        res.json(updatedPerson);
+      } else {
+        res.status(404).send({ error: 'Person not found' });
+      }
+    })
+    .catch(error => next(error)); // Pass the error to the error handler middleware
+});
+
+
 app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
 

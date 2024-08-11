@@ -6,7 +6,6 @@ const Person = require('./models/person');
 
 const app = express();
 
-// Use environment variable for port or default to 3001
 const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
@@ -16,7 +15,8 @@ app.use(express.static('dist'));
 
 // MongoDB connection
 const url = process.env.MONGODB_URI || 'your_mongodb_connection_string';
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose
+  .connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(error => console.error('Error connecting to MongoDB:', error.message));
 
@@ -31,47 +31,53 @@ app.get('/info', (request, response) => {
   });
 });
 
-app.get('/api/persons', (req, res) => {
-  Person.find({}).then(persons => {
-    res.json(persons);
-  });
+app.get('/api/persons', (req, res, next) => {
+  Person.find({})
+    .then(persons => {
+      res.json(persons);
+    })
+    .catch(error => next(error)); // Pass the error to the error handler
 });
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).send({ error: 'Invalid ID format' });
   }
 
-  Person.findById(id).then(person => {
-    if (person) {
-      res.json(person);
-    } else {
-      res.status(404).send({ error: 'Not found' });
-    }
-  }).catch(error => {
-    res.status(500).send({ error: 'Something went wrong' });
-  });
+  Person.findById(id)
+    .then(person => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).send({ error: 'Not found' });
+      }
+    })
+    .catch(error => next(error)); // Pass the error to the error handler
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   const body = req.body;
+
   if (!body.name || !body.number) {
     return res.status(400).json({ error: 'name or number missing' });
   }
+
   const person = new Person({
     name: body.name,
-    number: body.number
+    number: body.number,
   });
-  person.save().then(savedPerson => {
-    res.json(savedPerson);
-  }).catch(error => {
-    res.status(500).json({ error: 'Something went wrong' });
-  });
+
+  person
+    .save()
+    .then(savedPerson => {
+      res.json(savedPerson);
+    })
+    .catch(error => next(error)); // Pass the error to the error handler
 });
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -86,12 +92,26 @@ app.delete('/api/persons/:id', (req, res) => {
         res.status(404).send({ error: 'Not found' });
       }
     })
-    .catch(error => {
-      console.error('Error deleting person:', error.message);
-      res.status(500).send({ error: 'Something went wrong' });
-    });
+    .catch(error => next(error));
 });
 
+// Error handling middleware
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'Invalid ID format' });
+  }
+
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message });
+  }
+
+  next(error);  
+};
+
+// Use error handling middleware
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

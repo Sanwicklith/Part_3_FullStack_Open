@@ -52,12 +52,14 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
   const id = req.params.id;
-  const person = persons.find(person => person.id === id);
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).send({ error: 'not found' });
-  }
+  Person.findById(id).then(note=>{
+    if (note) {
+      res.json(note);
+      } else {
+        res.status(404).send({ error: 'not found' });
+        }
+
+  })
 });
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -72,27 +74,16 @@ app.delete('/api/persons/:id', (req, res) => {
 });
 
 app.post('/api/persons', (req, res) => {
-  const id = Math.floor(Math.random() * 10000);
-  const namesInPhonebook = persons.map(person => person.name);
-  logger(req, res, () => {
-    console.log(JSON.stringify(req.body));
-  });
-  const { name, number } = req.body;
-  if (namesInPhonebook.includes(name)) {
-    return res.status(400).json({ error: 'name must be unique' });
-  }
-  if (!name || !number) {
+  const body = req.body;
+  if (!body.name || !body.number) {
     return res.status(400).json({ error: 'name or number missing' });
-  }
-  const newPerson = {
-    name,
-    number,
-    id,
-  };
-  persons = [...persons, newPerson];
-  res.json(newPerson);
-});
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+    }
+  const person = new Person({
+    name: body.name,
+    number: body.number
+    });
+  person.save().then(savedPerson => {
+    res.json(savedPerson);
+    })
+})
+

@@ -56,7 +56,7 @@ app.get('/api/persons/:id', (req, res) => {
     if (note) {
       res.json(note);
       } else {
-        res.status(404).send({ error: 'not found' });
+        res.status(404).send({ error: 'Not found' });
         }
 
   })

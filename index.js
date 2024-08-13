@@ -3,10 +3,12 @@ const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const Person = require('./models/person');
+require('dotenv').config();
+
 
 const app = express();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(morgan('tiny'));
@@ -143,6 +145,6 @@ const errorHandler = (error, req, res, next) => {
 // Use error handling middleware
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });

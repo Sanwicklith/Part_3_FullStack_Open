@@ -8,12 +8,16 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "insp": "nodemon --inspect index.js",
-    "start:debug": "node --inspect index.js"
+    "start:debug": "node --inspect index.js",
+    "lint": "eslint ."
   },
   "author": "Mkalinga Christopher S",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
     "@flydotio/dockerfile": "^0.5.8",
+    "eslint": "^9.9.0",
+    "globals": "^15.9.0",
     "nodemon": "^3.1.4"
   },
   "dependencies": {
